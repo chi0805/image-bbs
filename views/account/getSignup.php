@@ -12,7 +12,7 @@
                 <span class="save-rule">
                     (40文字以内)
                 </span><br/>
-                <input id="user_name" type="text" name="user_name" value="<?php echo $this->escape($user_name); ?>"><br/>
+                <input id="user_name" type="text" name="user_name" value="<?php if (!empty($user_name)) echo $this->escape($user_name); ?>"><br/>
             </label></li>
             <li><label for="password">
                 <span class="save-item">
@@ -21,7 +21,7 @@
                 <span class="save-rule">
                     (半角英大文字・小文字・数字・記号を含む8〜20文字)
                 </span><br>
-                <input id="name" type="password" name="password" value="<?php ?>"><br/>
+                <input id="name" type="password" name="password" value="<?php if (!empty($password)) echo $this->escape($password); ?>"><br/>
             </label></li>
             <li>
                 <?php if (isset($errors) && is_countable($errors)): ?>
@@ -38,5 +38,4 @@
         </ul>
     </form>
 </div>
-
 

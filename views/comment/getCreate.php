@@ -1,5 +1,5 @@
 <?php $this->setLayoutVar('title', 'home') ?>
-<h2>HOME</h2>
+<h2>CREATE</h2>
 
 <form class="submit" name="create" action="./confirm" method="post" enctype="multipart/form-data">
     <input type="hidden" name="_token" value="<?php echo $this->escape($_token); ?>">

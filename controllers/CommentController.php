@@ -1,71 +1,87 @@
 <?php
 class CommentController extends Controller {
-    public $categories;
-    public $colors;
-
-    public function setConst() {
-        $this->categories = ['料理', '景色', '動物', 'スポーツ', 'ゲーム', 'その他'];
-        $this->colors = [ 
-            'red'    => '赤',
-            'blue'   => '青',
-            'yellow' => '黄色',
-            'green'  => '緑',
-            'pink'   => 'ピンク',
-            'black'  => '黒',
-        ];
-
-        return ['categories' => $this->categories, 'colors' => $this->colors];
-    }
 
     public function getHomeAction() {
+        global $categories;
         //投稿コメント関連のセッション破棄
         $this->session->remove('errors');
         $this->session->remove('comment');
         $this->session->remove('color');
         $this->session->remove('category');
 
-        if (!empty($this->request->getGet('sort'))) {
+        if (!is_null($this->request->getGet('sort'))) {
             $sort = $this->request->getGet('sort');
         } else {
             $sort = 'DESC';
         }
 
+        if (!empty($this->request->getGet('page'))) {
+            $page = (int)$this->request->getGet('page'); 
+        } else {
+            $page = 1;
+        }
+
         $user_id   = $this->session->get('user_id');
         $user_info = $this->db_manager->get('User')->fetchByUserId($user_id);
         $user_name = $user_info['name'];
-        $results   = $this->db_manager->get('Comment')->fetchByUserId($user_id, $sort);
+        $results   = $this->db_manager->get('Comment')->fetchByUserId($user_id, $sort, $page);
+        $last_page = (int)ceil(count($results)/10);
 
+        $select_results = [];
+        if (!empty($this->request->getGet('select_categories'))) {
+            $select_categories = $this->request->getGet('select_categories');
+        } elseif(!empty($this->session->get('select_categories'))) {
+            $select_categories = $this->session->get('select_categories');
+        } else {
+            $select_categories = array_keys($categories);
+        }
         $i = 0;
         foreach ($results as $result) {
-            //カテゴリを日本語に変更
-            $result['created_at']      = $this->db_manager->get('Comment')->getDatetimeJp($result['created_at']);
-            //日付のフォーマット変更
-            $result['category']        = $this->db_manager->get('Comment')->getCategoryJp($result['category']);
-            $results[$i]['created_at'] = $result['created_at'];
-            $results[$i]['category']   = $result['category'];
+            if (array_intersect(explode(',', $result['category']), $select_categories)) {
+                //カテゴリを日本語に変更
+                $result['created_at']      = $this->db_manager->get('Comment')->getDatetimeJp($result['created_at']);
+                //日付のフォーマット変更
+                $result['category']        = $this->db_manager->get('Comment')->getCategoryJp($result['category']);
+                $results[$i]['created_at'] = $result['created_at'];
+                $results[$i]['category']   = $result['category'];
+
+                $select_results[] = $results[$i];
+            }
             $i++;
         }
 
+        $this->session->set('select_categories', $select_categories);
         return $this->render([
             '_token'    => $this->generateCsrfToken('my/home'),
+            'categories'        => $categories,
+            'select_categories' => $select_categories,
             'user_name' => $user_name,
             'results'   => $results,
+            'page'      => $page,
+            'sort'      => $sort,
+            'select_results'    => $select_results,
+            'last_page' => $last_page,
         ]);
     }
 
     public function getCreateAction() {
+        global $categories;
+        global $colors;
         return $this->render([
             '_token'     => $this->generateCsrfToken('comment/create'),
             'comment'    => $this->session->get('comment'),
             'color'      => $this->session->get('color'),
             'category'   => $this->session->get('category'),
             'errors'     => $this->session->get('errors'),
-            'categories' => $this->setConst()['categories'],
-            'colors'     => $this->setConst()['colors'],
+            'categories' => $categories,
+            'colors'     => $colors,
         ]);
     }
 
     public function postConfirmAction() {
+        global $categories;
+        global $colors;
+
         $this->session->remove('errors');
         
         if (!$this->request->isPost()) {
@@ -91,7 +107,7 @@ class CommentController extends Controller {
             $image = $this->request->getFilePath('image', './images');
         } else if ($action === 'edit') {
             $image = $this->request->getPost('image');
-        }    
+        } 
 
         $errors = [];
 
@@ -118,7 +134,7 @@ class CommentController extends Controller {
                 $image_error = $this->request->getFile('image')['error'];
                 switch($image_error) {
                     case 0:
-                        $ext = getimagesize($image)['mime'];
+                        $ext = getimagesize("./{$image}")['mime'];
                         $ext = str_replace('image/', '', $ext);
                         if (!in_array($ext, ['png', 'PNG', 'jpg', 'JPG', 'gif'])) {
                             $errors['image'] = '画像の形式が間違っています';
@@ -158,8 +174,8 @@ class CommentController extends Controller {
             'category'   => $category,
             'image'      => $image,
             'action'     => $action,
-            'categories' => $this->setConst()['categories'],
-            'colors'     => $this->setConst()['colors'],
+            'categories' => $categories,
+            'colors'     => $colors,
         ]);
     }
 
@@ -206,11 +222,10 @@ class CommentController extends Controller {
     }
 
     public function getEditAction() {
-        $comment_id = $this->session->get('comment_id');
+        $comment_id = $this->request->getGet('comment_id');
         if (empty($this->session->get('errors'))) {
             $result = $this->db_manager->get('Comment')->fetchByCommentId($comment_id);
             $user_info = $this->db_manager->get('User')->fetchByUserId($result['user_id']);
-        
         
             return $this->render([
                 '_token'      => $this->generateCsrfToken('comment/edit'),

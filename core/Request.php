@@ -33,10 +33,10 @@ class Request {
 
     public function getFilePath($name, $file_dir, $default = null) {
         if (isset($_FILES[$name])) {
-            $file_name = uniqid();// . '-' . $_FILES[$name]['name'];
+            $file_name = uniqid();
             $file_path = $file_dir . '/' . $file_name;
             move_uploaded_file($_FILES['image']['tmp_name'], $file_path);
-            return $file_path;
+            return "/images/{$file_name}";
         }
 
         return $default;

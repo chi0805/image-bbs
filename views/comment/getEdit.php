@@ -28,7 +28,7 @@ $genders = [
         <input type="hidden" name="comment_id" value="<?php echo $this->escape($comment_id); ?>">
         <input type="hidden" name="image" value="<?php echo $this->escape($image); ?>">
         <li>
-            <img id="comment_image" src="<?php echo '../../' . $image; ?>"><br/>
+            <img id="comment_image" src="<?php echo $image ?>"><br/>
         </li>
         <li>
             <label id="comment">

@@ -7,10 +7,10 @@
     <form class="submit_comment_section" action="./save/post" method="post" enctype="multipart/form-data">
     <input type="hidden" name="_token" value="<?php echo $this->escape($_token); ?>">
     <input type="hidden" name="action" value="<?php echo $this->escape($action); ?>">
-    <input type="hidden" name="image" value="<?php echo $this->escape('../../' . $image); ?>">
+    <input type="hidden" name="image" value="<?php echo $this->escape($image); ?>">
     <input type="hidden" name="comment_id" value="<?php echo $this->escape($comment_id); ?>">
         <li>
-            <img id="comment_image" src="<?php echo '../../' . $image; ?>"><br/>
+            <img id="comment_image" src="<?php echo $image; ?>"><br/>
         </li>
         <li>
             <label id="comment">ひとこと:<br/>

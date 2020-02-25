@@ -1,7 +1,7 @@
 <?php
 
 class CommentRepository extends DbRepository {
-    public function insert($user_id, $comment, $color, array $category, $image, $sort) {
+    public function insert($user_id, $comment, $color, array $category, $image) {
         $category = implode(',', $category);
         $now = new DateTime();
 
@@ -32,6 +32,14 @@ class CommentRepository extends DbRepository {
 
     }
 
+    public function fetchAllComments($sort) {
+        $sql = "SELECT id, user_id, comment, image, color, category, created_at FROM fw_image_bbs ORDER BY created_at $sort";
+
+        $results = $this->fetchAll($sql);
+
+        return $results;
+    }
+
     public function fetchByUserId($user_id, $sort) {
         $sql = "SELECT id, comment, image, color, category, created_at FROM fw_image_bbs WHERE user_id = :user_id ORDER BY created_at $sort";
         $params = [
@@ -39,6 +47,7 @@ class CommentRepository extends DbRepository {
         ];
 
         $results = $this->fetchAll($sql, $params);
+
         return $results;
     }
 
@@ -49,6 +58,7 @@ class CommentRepository extends DbRepository {
         ];
 
         $result = $this->fetch($sql, $params);
+
         return $result;
     }
 

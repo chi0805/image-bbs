@@ -9,22 +9,18 @@
                 <span class="save-item">
                     名前
                 </span><br/>
-                <input id="user_name" type="text" name="user_name" value="<?php ?>"><br/>
+                <input id="user_name" type="text" name="user_name" value="<?php if (!empty($user_name)) echo htmlspecialchars($user_name); ?>"><br/>
             </label></li>
             <li><label for="password">
                 <span class="save-item">
                     パスワード
                 </span><br/>
-                <input id="name" type="password" name="password" value="<?php ?>"><br/>
+                <input id="name" type="password" name="password" value="<?php if (!empty($password)) echo htmlspecialchars($password); ?>"><br/>
             </label></li>
             <li>
-                <?php if (isset($errors) && is_countable($errors)): ?>
-                    <?php foreach ($errors as $error_key => $error_value): ?>
-                        <div class='error'>
-                            <?php echo htmlspecialchars($error_value); ?>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <div class='error'>
+                <?php if (!empty($error)) echo htmlspecialchars($error); ?>
+                </div>
             </li>
             <li>
                 <input id="submit_button" type="submit" name="submit" value="LOGIN">
