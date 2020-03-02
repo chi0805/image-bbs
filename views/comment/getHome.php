@@ -2,14 +2,16 @@
 
 <h2>HOME</h2>
 
-<a href="./comment/create">つぶやく</a>
-<form class="delete-button" name="logout" action="../account/signout/post" method="post">
+<a class="tweet-button" href="./comment/create">つぶやく</a>
+<form class="signout-button" name="logout" action="../account/signout/post" method="post">
     <a href="javascript:logout.submit()">logout</a>
 </form>
 
 <ul class="sort">
-    <li class="sort-rule"><a href="./home?sort=DESC&page=<?php echo $page; ?>">新しい順</a></li>
-    <li class="sort-rule"><a href="./home?sort=ASC&page=<?php echo $page; ?>">古い順</a></li>
+    <li id="sort_title">
+    並び替え</li>
+    <li id="sort-rule"><a href="./home?sort=DESC&page=<?php echo $page; ?>">新しい順</a></li>
+    <li id="sort-rule"><a href="./home?sort=ASC&page=<?php echo $page; ?>">古い順</a></li>
 </ul>
 <div class="category-select">
     <p>カテゴリー</p>
@@ -23,7 +25,7 @@
     </form>
 </div>
 
-<ul class="comment_list">
+<ul class="comment-list">
     <?php $i = 0; ?>
     <?php while($i < 10 && isset($select_results[10 * ($page - 1) + $i])): ?>
     <?php $result = $select_results[10 * ($page - 1) + $i]; ?>
@@ -37,11 +39,11 @@
             </font>
             <p class="datetime"><?php echo $result['created_at']; ?></p>
             <form class="edit-button" action="./comment/edit/<?php echo $result['id']; ?>" method="get">
-                <input type="submit"  value="編集">
+                <input class="edit-button" type="submit"  value="編集">
                 <input type="hidden" name="comment_id" value="<?php echo $result['id']; ?>">
             </form>
-            <form class="delete-button" action="./comment/delete/post" method="post">
-                <input type="submit" name="delete" value="削除">
+            <form class="delete-button" onsubmit="return confirm_delete()" action="./comment/delete/post" method="post">
+                <input class="delete-button" type="submit" name="delete" value="削除">
                 <input type="hidden" name="comment_id" value="<?php echo $result['id']; ?>">
                 <input type="hidden" name="_token" value="<?php echo $this->escape($_token); ?>">
             </form>
@@ -59,4 +61,10 @@
         class="<?php if ($page == $last_page) echo 'no-link'; ?>">次のページ</a>
     <a href="./home?sort=<?php echo $sort; ?>&page=<?php echo $last_page; ?>"
         class="<?php if ($page == $last_page) echo 'no-link'; ?>">最後のページ</a>
-</div>
+</div> 
+<script>
+function confirm_delete() {
+    var select = confirm("削除しますか?");
+    return select;
+}
+</script>

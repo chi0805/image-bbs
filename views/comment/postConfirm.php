@@ -10,12 +10,12 @@
     <input type="hidden" name="image" value="<?php echo $this->escape($image); ?>">
     <input type="hidden" name="comment_id" value="<?php echo $this->escape($comment_id); ?>">
         <li>
-            <img id="comment_image" src="<?php echo $image; ?>"><br/>
+            <img id="comment_image" src="<?php echo $this->escape($image); ?>"><br/>
         </li>
         <li>
             <label id="comment">ひとこと:<br/>
                 <font color="<?php echo $color; ?>"> 
-                <textarea id="comment" type="text" name="comment" readonly><?php echo $comment; ?></textarea>
+                <textarea id="comment" type="text" name="comment" readonly><?php echo $this->escape($comment); ?></textarea>
                 </font>
             </label><br/>
         </li>
@@ -47,12 +47,9 @@
             <?php foreach ($categories as $category_name): ?>
             <label name="category">
                 <input type="checkbox" name="category[]" value="<?php echo array_search($category_name, $categories); ?>"
-                    <?php if (in_array(array_search($category_name, $categories), $category)): ?>
-                    <?php echo "checked"; ?>
-                    <?php else: ?>
-                    <?php echo "disabled" ?>
-                    <?php endif; ?>
+                    <?php if (in_array(array_search($category_name, $categories), $category)) echo "checked"; ?> disabled="disabled"
                 ><?php echo $category_name; ?>
+                <input type="hidden" name="category" value="<?php echo implode(',', $category); ?>">
             </label>
             <?php endforeach; ?><br/>
             <input class="submit_button" type="submit" value="つぶやく">

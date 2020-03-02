@@ -14,7 +14,7 @@
                     (200文字以内)
                 </span>
             </label><br/>
-            <textarea id="comment" name="comment"><?php if (!empty($comment)) echo $comment; ?></textarea><br/></textarea><br/>
+            <textarea id="comment" name="comment"><?php if (!empty($comment)) echo $this->escape($comment); ?></textarea><br/>
         </li>
         <li>
             <label id="color">
@@ -30,6 +30,7 @@
                     <input id="<?php echo $color_en ?>" type="radio" name="color" value="<?php echo $color_en ?>" <?php if (!empty($color) && $color_en === $color) echo "checked"; ?>><?php echo $color_jp ?>
                 </label>
             <?php endforeach; ?><br/>
+        </li>
         <li>
             <label id="image">
                 <span class="save-item">

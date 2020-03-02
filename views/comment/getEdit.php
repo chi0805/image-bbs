@@ -1,23 +1,3 @@
-<?php 
-
-$colors = [
-    'red'    => '赤',
-    'blue'  => '青',
-    'yellow' => '黄色',
-    'green'  => '緑',
-    'pink'   => 'ピンク',
-    'black'  => '黒',
-];
-
-$categories = ['料理','動物','スポーツ','ゲーム','その他',];
-
-$genders = [
-    'male' => '男性',
-    'female' => '女性',
-    'other' => 'その他',
-];
-
-?>
 <?php $this->setLayoutVar('title', 'home') ?>
 
 <p>以下のひとことを編集します</p>

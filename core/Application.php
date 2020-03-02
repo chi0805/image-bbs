@@ -8,13 +8,15 @@ abstract class Application {
     protected $db_manager;
     protected $login_action = [];
 
-    public function __construct($debug =false) {
+    public function __construct($debug =false) 
+    {
         $this->setDebugMode($debug);
         $this->initialize();
         $this->configure();
     }
 
-    protected function setDebugMode($debug) {
+    protected function setDebugMode($debug) 
+    {
         if ($debug) {
             $this->debug = true;
             ini_set('display_errors', 1);
@@ -25,7 +27,8 @@ abstract class Application {
         }
     }
 
-    protected function initialize() {
+    protected function initialize() 
+    {
         $this->request = new Request();
         $this->response = new Response();
         $this->session = new Session();
@@ -33,7 +36,8 @@ abstract class Application {
         $this->router = new Router($this->registerRoutes());
     }
 
-    protected function configure() {
+    protected function configure() 
+    {
 
     }
 
@@ -41,44 +45,54 @@ abstract class Application {
 
     abstract protected function registerRoutes();
 
-    public function isDebugMode() {
+    public function isDebugMode() 
+    {
         return $this->debug;
     }
 
-    public function getRequest() {
+    public function getRequest() 
+    {
         return $this->request;
     }
 
-    public function getResponse() {
+    public function getResponse() 
+    {
         return $this->response;
     }
 
-    public function getSession() {
+    public function getSession() 
+    {
         return $this->session;
     }
 
-    public function getDbManager() {
+    public function getDbManager() 
+    {
         return $this->db_manager;
     }
 
-    public function getControllerDir() {
+    public function getControllerDir() 
+    {
         return $this->getRootDir() . '/controllers';
     }
 
-    public function getViewDir() {
+    public function getViewDir() 
+    {
         return $this->getRootDir() . '/views';
     }
 
-    public function getModelDir() {
+    public function getModelDir() 
+    {
         return $this->getRootDir() . '/models';
     }
 
-    public function getWebDir() {
+    public function getWebDir() 
+    {
         return $this->getRootDir() . '/web';
     }
 
 
-    public function run() {
+    public function run() 
+    {
         try {
             $params = $this->router->resolve($this->request->getPathInfo());
             if ($params === false) {
@@ -100,7 +114,8 @@ abstract class Application {
         $this->response->send();
     }
 
-    protected function render404page($e) {
+    protected function render404page($e) 
+    {
         $this->response->setStatusCode(404, 'NotFound');
         $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
         $message = htmlspecialchars($message, ENT_QUOTES, 'utf-8');
@@ -121,7 +136,8 @@ EOF
         );
     }
 
-    public function runAction($controller_name, $action, $params = array()) {
+    public function runAction($controller_name, $action, $params = array()) 
+    {
         $controller_class = ucfirst($controller_name) . 'Controller';
 
         $controller = $this->findController($controller_class);
@@ -137,7 +153,8 @@ EOF
         $this->response->setContent($content);
     }
 
-    protected function findController($controller_class) {
+    protected function findController($controller_class) 
+    {
         if (!class_exists($controller_class)) {
             $controller_file = $this->getControllerDir() . '/' . $controller_class . '.php';
 

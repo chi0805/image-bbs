@@ -3,7 +3,8 @@
 <html>
 <head>
     <meta http-eqiv="Content-Type" contenr="text/html; charset=utf-8">
-    <title><?php if (isset($title)): echo $this->escape($title) . ' - '; endif; ?>Image BBS</title>
+    <link rel="stylesheet" href="../web/css/style.css" type="text/css">
+    <title><?php if (isset($title)) echo $this->escape($title) . ' - '; ?>Image BBS</title>
 </head>
 <body> 
     <div id="header">

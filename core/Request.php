@@ -1,7 +1,8 @@
 <?php
 
 class Request {
-    public function isPost() {
+    public function isPost() 
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return true;
         }
@@ -9,7 +10,8 @@ class Request {
         return false;
     }
 
-    public function getGet($name, $default = null) {
+    public function getGet($name, $default = null) 
+    {
         if (isset($_GET[$name])) {
             return $_GET[$name];
         }
@@ -17,7 +19,8 @@ class Request {
         return $default;
     }
 
-    public function getPost($name, $default = null) {
+    public function getPost($name, $default = null) 
+    {
         if (isset($_POST[$name])) {
             return $_POST[$name];
         }
@@ -25,24 +28,8 @@ class Request {
         return $default;
     }
 
-    public function getFile($name, $default = null) {
-        if (isset($_FILES[$name])) {
-            return $_FILES[$name];
-        }
-    }
-
-    public function getFilePath($name, $file_dir, $default = null) {
-        if (isset($_FILES[$name])) {
-            $file_name = uniqid();
-            $file_path = $file_dir . '/' . $file_name;
-            move_uploaded_file($_FILES['image']['tmp_name'], $file_path);
-            return "/images/{$file_name}";
-        }
-
-        return $default;
-    }
-
-    public function getHost() {
+    public function getHost() 
+    {
         if (!empty($_SERVER['HTTP_HOST'])) {
             return $_SERVER['HTTP_HOST'];
         }
@@ -50,7 +37,8 @@ class Request {
         return $_SERVER['SERVER_NAME'];
     }
 
-    public function isSsl() {
+    public function isSsl() 
+    {
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
             return true;
         }
@@ -58,11 +46,13 @@ class Request {
         return false;
     }
 
-    public function getRequestUri() {
+    public function getRequestUri() 
+    {
         return $_SERVER['REQUEST_URI'];
     }
 
-    public function getBaseUrl() {
+    public function getBaseUrl() 
+    {
         $script_name = $_SERVER['SCRIPT_NAME'];
         $request_uri = $this->getRequestUri();
         if (0 === strpos($request_uri, $script_name)) {
@@ -74,7 +64,8 @@ class Request {
         return '';
     }
 
-    public function getPathInfo() {
+    public function getPathInfo() 
+    {
         $base_url = $this->getBaseUrl();
         $request_uri = $this->getRequestUri();
         if (false !== ($pos = strpos($request_uri, '?'))) {

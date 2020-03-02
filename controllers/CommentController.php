@@ -1,15 +1,21 @@
 <?php
 class CommentController extends Controller {
 
-    public function getHomeAction() {
+    public function getHomeAction() 
+    {
+        if (!$this->session->isAuthenticated()) {
+            $this->forward404(); 
+        }
+
         global $categories;
         //投稿コメント関連のセッション破棄
         $this->session->remove('errors');
         $this->session->remove('comment');
         $this->session->remove('color');
         $this->session->remove('category');
+        $this->session->remove('image');
 
-        if (!is_null($this->request->getGet('sort'))) {
+        if (!empty($this->request->getGet('sort'))) {
             $sort = $this->request->getGet('sort');
         } else {
             $sort = 'DESC';
@@ -25,7 +31,6 @@ class CommentController extends Controller {
         $user_info = $this->db_manager->get('User')->fetchByUserId($user_id);
         $user_name = $user_info['name'];
         $results   = $this->db_manager->get('Comment')->fetchByUserId($user_id, $sort, $page);
-        $last_page = (int)ceil(count($results)/10);
 
         $select_results = [];
         if (!empty($this->request->getGet('select_categories'))) {
@@ -35,36 +40,34 @@ class CommentController extends Controller {
         } else {
             $select_categories = array_keys($categories);
         }
-        $i = 0;
-        foreach ($results as $result) {
-            if (array_intersect(explode(',', $result['category']), $select_categories)) {
-                //カテゴリを日本語に変更
-                $result['created_at']      = $this->db_manager->get('Comment')->getDatetimeJp($result['created_at']);
+        for ($i = 0; $i < count($results); $i++) {
+            if (array_intersect(explode(',', $results[$i]['category']), $select_categories)) {
                 //日付のフォーマット変更
-                $result['category']        = $this->db_manager->get('Comment')->getCategoryJp($result['category']);
-                $results[$i]['created_at'] = $result['created_at'];
-                $results[$i]['category']   = $result['category'];
+                $results[$i]['created_at'] = $this->db_manager->get('Comment')->getDatetimeJp($results[$i]['created_at']);
+                //カテゴリを日本語に変更
+                $results[$i]['category']   = $this->db_manager->get('Comment')->getCategoryJp($results[$i]['category']);
 
                 $select_results[] = $results[$i];
             }
-            $i++;
         }
+        $last_page = (int)ceil(count($select_results)/10);
 
         $this->session->set('select_categories', $select_categories);
+
         return $this->render([
-            '_token'    => $this->generateCsrfToken('my/home'),
+            '_token'            => $this->generateCsrfToken('my/home'),
             'categories'        => $categories,
             'select_categories' => $select_categories,
-            'user_name' => $user_name,
-            'results'   => $results,
-            'page'      => $page,
-            'sort'      => $sort,
+            'user_name'         => $user_name,
+            'page'              => $page,
+            'sort'              => $sort,
             'select_results'    => $select_results,
-            'last_page' => $last_page,
+            'last_page'         => $last_page,
         ]);
     }
 
-    public function getCreateAction() {
+    public function getCreateAction() 
+    {
         global $categories;
         global $colors;
         return $this->render([
@@ -78,22 +81,25 @@ class CommentController extends Controller {
         ]);
     }
 
-    public function postConfirmAction() {
+    public function postConfirmAction() 
+    {
         global $categories;
         global $colors;
 
+        $action = $this->request->getPost('action');
         $this->session->remove('errors');
-        
-        if (!$this->request->isPost()) {
+        if (!$this->request->isPost() || !in_array($action, ['create', 'edit'])) {
            $this->forward404(); 
         }
 
         $token      = $this->request->getPost('_token');
-        $action     = $this->request->getPost('action');
         $comment    = $this->request->getPost('comment');
         $color      = $this->request->getPost('color');
-        $category   = $this->request->getPost('category');
         $comment_id = $this->request->getPost('comment_id');
+        $category   = $this->request->getPost('category');
+        if (is_null($category)) {
+            $category = [];
+        }
 
         if (!$this->checkCsrfToken("comment/{$action}", $token)) {
             if ($action === "create") {
@@ -103,13 +109,19 @@ class CommentController extends Controller {
             }
         }
 
+        $errors = [];
+
         if ($action === 'create') {
-            $image = $this->request->getFilePath('image', './images');
+            $tmp_name = $_FILES['image']['tmp_name'];
+            $image_error = $this->db_manager->get('Comment')->checkImageError($tmp_name, 'image');
+            if (!empty($image_error)) {
+                $errors['image'] = $image_error;
+            } else {
+                $image = $this->db_manager->get('Comment')->getImagePath($tmp_name, 'image', './images');
+            }
         } else if ($action === 'edit') {
             $image = $this->request->getPost('image');
         } 
-
-        $errors = [];
 
         if (empty($comment)) {
             $errors['comment'] = 'コメントを入力してください';
@@ -127,29 +139,6 @@ class CommentController extends Controller {
             $errors['category'] = 'カテゴリは3つまで選択できます';
         }
 
-        if ($action === 'create' ) {
-            if (empty($image)) {
-                $errors['image'] = '画像を選択してください';
-            } else {
-                $image_error = $this->request->getFile('image')['error'];
-                switch($image_error) {
-                    case 0:
-                        $ext = getimagesize("./{$image}")['mime'];
-                        $ext = str_replace('image/', '', $ext);
-                        if (!in_array($ext, ['png', 'PNG', 'jpg', 'JPG', 'gif'])) {
-                            $errors['image'] = '画像の形式が間違っています';
-                        }
-                        break;
-                    case 1:
-                    case 2:
-                        $errors['image'] = '画像サイズが大きすぎます';
-                        break;
-                    case 4:
-                        $errors['image'] = '画像を選択してください';
-                        break;
-                }
-            }
-        }
 
         if (!empty($errors)) {
             $this->session->set('comment_id', $comment_id);
@@ -160,7 +149,7 @@ class CommentController extends Controller {
 
             if ($action === 'create' ) {
                 return $this->redirect('/my/comment/create');
-            } else if ($action === 'edit') {
+            } elseif ($action === 'edit') {
                 $this->session->set('image', $image);
                 return $this->redirect("/my/comment/edit/{$comment_id}");
             }
@@ -179,7 +168,8 @@ class CommentController extends Controller {
         ]);
     }
 
-    public function postSaveAction() {
+    public function postSaveAction() 
+    {
         if (!$this->request->isPost()) {
            $this->forward404(); 
         }
@@ -195,7 +185,7 @@ class CommentController extends Controller {
 
         if ($action === 'create') {
             $this->db_manager->get('Comment')->insert($user_id, $comment, $color, $category, $image);
-        } else if ($action === 'edit') {
+        } elseif ($action === 'edit') {
             $this->db_manager->get('Comment')->update($comment_id, $comment, $color, $category);
         }
 
@@ -205,13 +195,19 @@ class CommentController extends Controller {
         $this->session->remove('category');
         $this->session->remove('image');
         $this->session->remove('errors');
+        $this->session->remove('select_categories');
 
         if ($this->checkCsrfToken("comment/confirm", $token)) {
             return $this->redirect('/my/home');
         }
     }
 
-    public function postDeleteAction() {
+    public function postDeleteAction() 
+    {
+        if (!$this->request->isPost()) {
+           $this->forward404(); 
+        }
+
         $token = $this->request->getPost('_token');
         if ($this->checkCsrfToken("my/home", $token)) {
             $comment_id = $this->request->getPost('comment_id');
@@ -221,31 +217,36 @@ class CommentController extends Controller {
         }
     }
 
-    public function getEditAction() {
-        $comment_id = $this->request->getGet('comment_id');
+    public function getEditAction() 
+    {
+        global $categories;
+        global $colors;
         if (empty($this->session->get('errors'))) {
+            $comment_id = $this->request->getGet('comment_id');
             $result = $this->db_manager->get('Comment')->fetchByCommentId($comment_id);
             $user_info = $this->db_manager->get('User')->fetchByUserId($result['user_id']);
         
             return $this->render([
                 '_token'      => $this->generateCsrfToken('comment/edit'),
                 'comment_id'  => $comment_id,
-                'user_name'   => $user_info['name'],
                 'comment'     => $result['comment'],
                 'image'       => $result['image'],
                 'color'       => $result['color'],
                 'category'    => explode(',', $result['category']),
-                'created_at'  => $result['created_at'],
+                'categories'  => $categories,
+                'colors'      => $colors,
             ]);
         } else {
             return $this->render([
-                '_token'     => $this->generateCsrfToken('comment/create'),
-                'comment_id' => $comment_id,
+                '_token'     => $this->generateCsrfToken('comment/edit'),
+                'comment_id' => $this->session->get('comment_id'),
                 'comment'    => $this->session->get('comment'),
                 'image'      => $this->session->get('image'),
                 'color'      => $this->session->get('color'),
                 'category'   => $this->session->get('category'),
                 'errors'     => $this->session->get('errors'),
+                'categories' => $categories,
+                'colors'     => $colors,
             ]);
         
         }

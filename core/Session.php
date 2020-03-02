@@ -4,7 +4,8 @@ class Session {
     protected static $sessionStarted = false;
     protected static $sessionIdRegenerated = false;
 
-    public function __construct() {
+    public function __construct() 
+    {
         if (!self::$sessionStarted) {
             session_start();
 
@@ -12,11 +13,13 @@ class Session {
         }
     }
 
-    public function set($name, $value) {
+    public function set($name, $value) 
+    {
         $_SESSION[$name] = $value;
     }
 
-    public function get($name, $default = null) {
+    public function get($name, $default = null) 
+    {
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
         }
@@ -24,15 +27,18 @@ class Session {
         return $default;
     }
 
-    public function remove($name) {
+    public function remove($name) 
+    {
         unset($_SESSION[$name]);
     }
 
-    public function clear() {
+    public function clear() 
+    {
         $_SESSION = array();
     }
 
-    public function regenerate($destroy = true) {
+    public function regenerate($destroy = true) 
+    {
         if (!self::$sessionIdRegenerated) {
             session_regenerate_id($destroy);
 
@@ -40,13 +46,15 @@ class Session {
         }
     }
 
-    public function setAuthenticated($bool) {
+    public function setAuthenticated($bool) 
+    {
         $this->set('_authenticated', (bool)$bool);
 
         $this->regenerate();
     }
 
-    public function isAuthenticated() {
+    public function isAuthenticated() 
+    {
         return $this->get('_authenticated', false);
     }
 }

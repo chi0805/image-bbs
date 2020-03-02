@@ -15,7 +15,7 @@
                 <span class="save-item">
                     パスワード
                 </span><br/>
-                <input id="name" type="password" name="password" value="<?php if (!empty($password)) echo htmlspecialchars($password); ?>"><br/>
+                <input id="name" type="password" name="password"><br/>
             </label></li>
             <li>
                 <div class='error'>

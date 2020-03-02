@@ -1,10 +1,12 @@
 <?php
 class AccountController extends Controller {
-    public function getIndexAction() {
+    public function getIndexAction() 
+    {
         return $this->redirect('/home');
     }
 
-    public function getHomeAction() {
+    public function getHomeAction() 
+    {
         if (!empty($this->request->getGet('sort'))) {
             $sort = $this->request->getGet('sort');
         } else {
@@ -23,32 +25,25 @@ class AccountController extends Controller {
         $select_results = [];
         if (!empty($this->request->getGet('select_categories'))) {
             $select_categories = $this->request->getGet('select_categories');
-        } elseif(!empty($this->session->get('select_categories'))) {
-            $select_categories = $this->session->get('select_categories');
         } else {
             $select_categories = array_keys($categories);
         }
 
-        $i = 0;
-        foreach ($results as $result) {
-            if (array_intersect(explode(',', $result['category']), $select_categories)) {
+        for($i = 0; $i < count($results); $i++) {
+            if (array_intersect(explode(',', $results[$i]['category']), $select_categories)) {
                 //ユーザーIDをユーザー情報取得
-                $user_info = $this->db_manager->get('User')->fetchByUserId($result['user_id']);
+                $user_info = $this->db_manager->get('User')->fetchByUserId($results[$i]['user_id']);
                 //カテゴリを日本語に変更
-                $result['created_at']      = $this->db_manager->get('Comment')->getDatetimeJp($result['created_at']);
+                $results[$i]['created_at']      = $this->db_manager->get('Comment')->getDatetimeJp($results[$i]['created_at']);
                 //日付のフォーマット変更
-                $result['category']        = $this->db_manager->get('Comment')->getCategoryJp($result['category']);
+                $results[$i]['category']        = $this->db_manager->get('Comment')->getCategoryJp($results[$i]['category']);
                 $results[$i]['user_name']  = $user_info['name'];
-                $results[$i]['created_at'] = $result['created_at'];
-                $results[$i]['category']   = $result['category'];
 
                 $select_results[] = $results[$i];
             }
-            $i++;
         }
 
-        if ($this->session->isAuthenticated() === false) {
-            $this->session->set('select_categories', $select_categories);
+        if (!$this->session->isAuthenticated()) {
             return $this->render([
                 'categories'        => $categories,
                 'select_categories' => $select_categories,
@@ -62,14 +57,20 @@ class AccountController extends Controller {
         }
     }
 
-    public function getSignupAction() {
+    public function getSignupAction() 
+    {
+        if ($this->session->isAuthenticated()) {
+            return $this->redirect('/my/home');
+        }
+
         $user_name = $this->session->get('user_name');
         $password  = $this->session->get('password');
         $errors    = $this->session->get('errors');
 
-        $this->session->clear('user_name');
-        $this->session->clear('password');
-        $this->session->clear('errors');
+        $this->session->remove('user_name');
+        $this->session->remove('password');
+        $this->session->remove('errors');
+
 
         return $this->render([
             '_token'    => $this->generateCsrfToken('account/signup'),
@@ -79,7 +80,8 @@ class AccountController extends Controller {
         ]);
     }
 
-    public function postSignupAction() {
+    public function postSignupAction() 
+    {
         if (!$this->request->isPost()) {
            $this->forward404(); 
         }
@@ -97,8 +99,10 @@ class AccountController extends Controller {
     
         if (empty($user_name)) {
             $errors['user_name'] = "名前を入力してください";
-        } else if (mb_strlen($user_name) > 40) {
+        } elseif (mb_strlen($user_name) > 40) {
             $errors['user_name'] = "名前は40文字以内で入力してください";
+        } elseif ($this->db_manager->get('User')->fetchByUsername($user_name)) {
+            $errors['user_name'] = "その名前は既に使用されています";
         }
 
         if (!mb_strlen($password)) {
@@ -106,11 +110,11 @@ class AccountController extends Controller {
         } elseif (mb_strlen($password) < 8 || mb_strlen($password) > 20){
             $errors['password'] = "パスワードは8〜20文字以下にしてください";
         } elseif (!preg_match('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,20}$/', $password)) {
-            $errors[('password')] = "パスワードは半角英大文字・小文字・数字・記号を含む8〜20文字にしてください";
+            $errors[('password')] = "パスワードは半角英大文字・小文字・数字を含む8〜20文字にしてください";
         }
 
         //正常時
-        if (count($errors) === 0) {
+        if (empty($errors)) {
             //認証情報をセットしてログイン画面へリダイレクト
             $this->db_manager->get('User')->insert($user_name, $password);
             return $this->redirect('/account/signin');
@@ -125,20 +129,24 @@ class AccountController extends Controller {
 
     }
 
-    public function getSigninAction() {
+    public function getSigninAction() 
+    {
+        if ($this->session->isAuthenticated()) {
+            return $this->redirect('/my/home');
+        }
+
         $user_name = $this->session->get('user_name');
-        $password  = $this->session->get('password');
         $error     = $this->session->get('error');
 
         return $this->render([
             '_token'    => $this->generateCsrfToken('account/signin'),
             'user_name' => $user_name,
-            'password'  => $password,
-            'error'    => $error,
+            'error'     => $error,
         ]);
     }
 
-    public function postSigninAction() {
+    public function postSigninAction() 
+    {
         if (!$this->request->isPost()) {
            $this->forward404(); 
         }
@@ -159,24 +167,28 @@ class AccountController extends Controller {
                 $this->session->setAuthenticated(true);
                 $this->session->set('user_id', $user_id);
                 $this->session->remove('select_categories');
+                $this->session->remove('user_name');
+                $this->session->remove('password');
+                $this->session->remove('error');
 
                 return $this->redirect('/my/home');
-            }
-        } {
-            $error = "ユーザー名またはパスワードか間違っています";
-            $this->session->set('user_name', $user_name);
-            $this->session->set('password', $password);
-            $this->session->set('error', $error);
+            } else {
+                $error = "ユーザー名またはパスワードか間違っています";
+                $this->session->set('user_name', $user_name);
+                $this->session->set('error', $error);
 
-            return $this->redirect('/account/signin');
+                return $this->redirect('/account/signin');
+            }
         }
     }
 
-    public function postSignoutAction(){
-        if ($this->session->isAuthenticated() === true) {
-            $this->session->clear();
-
-            return $this->redirect('/home');
+    public function postSignoutAction()
+    {
+        if (!$this->request->isPost()) {
+           $this->forward404(); 
         }
+
+        $this->session->clear();
+        return $this->redirect('/home');
     }
 }

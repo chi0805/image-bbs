@@ -19,7 +19,7 @@
                     パスワード
                 </span><br/>
                 <span class="save-rule">
-                    (半角英大文字・小文字・数字・記号を含む8〜20文字)
+                    (半角英大文字・小文字・数字を含む8〜20文字)
                 </span><br>
                 <input id="name" type="password" name="password" value="<?php if (!empty($password)) echo $this->escape($password); ?>"><br/>
             </label></li>
