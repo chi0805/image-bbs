@@ -1,0 +1,310 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Noto Sans JP,sans-serif;
+    margin: 0 auto;
+    color: #665e4d;
+    position: relative;
+}
+
+textarea{
+    color: #665e4d;
+    border: solid 1px #a9a9a9;
+    border-radius: 1px;
+    resize: none;
+    width: 250px;
+    height: 150px
+}
+
+a {
+    text-decoration: none;
+}
+
+a:link {
+    color: #665e4d;
+}
+
+a:visited {
+    color: #665e4d;
+}
+
+/* comment_create*/
+.header {
+    display: block;
+    padding: 10px 0px;
+    border-bottom: 1px solid #ccc;
+}
+
+form.submit {
+    display: block;
+    padding-top: 20px
+}
+
+.header-container {
+    width: 500px;
+    margin: 0 auto;
+}
+
+.body-container {
+    width: 500px;
+    margin: 0 auto;
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+}
+
+ul.input {
+    display: inline-block;
+}
+
+ul.input li {
+    margin-top: 8px;
+    text-align: left;
+    list-style-type: none;
+}
+
+input {
+    color: #665e4d;
+    border: solid 1px #a9a9a9;
+    border-radius: 1px;
+}
+
+select {
+    font-family: Noto Sans JP,sans-serif;
+    color: #665e4d;
+    border-radius: 1px;
+}
+
+input.select_image {
+    width: 250px;
+}
+
+p.comment {
+    padding-top: 10px;
+}
+
+a.title {
+    font-size: 24px;
+}
+
+a.title:hover {
+    text-decoration: underline;
+}
+
+.error {
+    font-size: 12px;
+    color:#FF0000;
+}
+
+
+/* comment_list*/
+
+a.tweet-button {
+    float: right;
+    height: 24px;
+    padding: 0 1px;
+    line-height: 24px;
+    color: #665e4d;
+    font-size: 13px;
+    border: 1px solid #665e4d;
+    border-radius: 1px;
+    transition: all  0.3s ease;
+}
+
+a.tweet-button:hover {
+    background-color: #665e4d;
+}
+
+.sort {
+    text-align: right;
+}
+
+ul.sort {
+    width: 100%;
+    text-align: right;
+    padding: 0;
+    border-radius: 4px;
+    position: relative;
+    top: 10px;
+}
+
+ul.sort li {
+    width: 60px;
+    list-style-type: none;
+    display: inline;
+    text-align: center;
+    font-size: 13px;
+    border: 1px solid #808080;
+    padding: 5px;
+}
+
+li#sort_title {
+    background-color: #665e4d;
+    color: #FFFFFF;
+}
+
+
+li#sort_rule {
+    text-decoration: none;
+    background-color: ##fffafa;
+    transition: all  0.3s ease;
+}
+
+li#sort_rule:hover {
+    background-color: #665e4d;
+}
+
+div.category-select {
+    text-align: right;
+}
+
+form.category-select {
+    display: inline;
+}
+
+ul.comment_list {
+    list-style-type: none;
+    font-size: 13px;
+    margin-top: 20px;
+    background-color: #fcf9f0;
+    line-height: 23px;
+    width: 100%;
+}
+
+ul.comment_list li {
+    width: 100%;
+    border-top: 1px solid #ccc;
+    display: inline-block;
+    padding-top: 5px;
+    text-align: center;
+}
+
+div.comment_section {
+    display: inline-block;
+    width: 70%;
+    text-align: center;
+}
+
+div.comment_section p {
+    margin-bottom: 0px;
+}
+
+p.user_info {
+    text-align: left;
+    float: left;
+}
+
+p.comment_body {
+    text-align: left;
+}
+
+.comment_image {
+    width: 100%;
+    text-align: left;
+}
+
+div.comment_section p.category{
+    text-align: right;
+    float: right;
+}
+
+p.datetime {
+    color: #696969;
+    text-align: right;
+}
+
+div.edit {
+    font-size: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+form.input_password {
+    display: inline;
+    vertical-align: top;
+}
+
+details {
+    width: 80px;
+    float: left
+}
+
+p.password {
+    width: 70px;
+}
+
+input#password {
+    width: 70px;
+}
+
+
+.button {
+    font-size: 10px;
+    position: relative;
+    display: inline-block;
+    padding: 0.1em 0.2em;
+    text-decoration: none;
+    background-color: #fffacd;
+    color: #bc8f8f;
+}
+
+p.password_error{
+    width: 70%;
+    display: left;
+    color: #ff0000;
+    text-align: left;
+    font-size: 12px;
+}
+
+.page-navi {
+    display: table;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.page-navi a{
+    display: table-cell;
+    border: 1px solid #ccc;
+}
+
+a.no-link {
+    pointer-events: none;
+    background-color: #C0C0C0;
+}
+
+/* comment_update */
+
+form.update_comment_section {
+    width: 70%
+}
+
+img#comment_image {
+    width: 70%;
+}
+
+input.update_button {
+    margin-top: 5px;
+    padding: 2px 3px;
+}
+
+ul.update-form {
+    text-align: center;
+}
+
+ul.update-form li {
+    list-style-type: none;
+    text-align: left;
+}
+
+/* comment_selete */
+ul.delete-form {
+    text-align: center;
+}
+
+ul.delete-form li {
+    list-style-type: none;
+    text-align: left;
+}
