@@ -1,0 +1,146 @@
+/*--------------------------------
+ * 共通
+--------------------------------*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Noto Sans JP,sans-serif;
+    margin: 0 auto;
+    color: #665e4d;
+    position: relative;
+    width: 60%;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:link {
+    color: #665e4d;
+}
+
+a:visited {
+    color: #665e4d;
+}
+
+ul {
+    list-style-type: none;
+}
+/*--------------------------------
+ * /my/home
+--------------------------------*/
+a.tweet-button {
+    float: right;
+    height: 24px;
+    padding: 0 1px;
+    line-height: 24px;
+    color: #665e4d;
+    font-size: 13px;
+    border: 1px solid #665e4d;
+    border-radius: 1px;
+    transition: all  0.3s ease;
+}
+
+a.tweet-button:hover {
+    background-color: #665e4d;
+}
+
+.sort {
+    text-align: right;
+}
+
+ul.sort {
+    width: 100%;
+    text-align: right;
+    padding: 0;
+    border-radius: 4px;
+    position: relative;
+    top: 10px;
+}
+
+ul.sort li {
+    width: 60px;
+    list-style-type: none;
+    display: inline;
+    text-align: center;
+    font-size: 13px;
+    border: 1px solid #808080;
+    padding: 5px;
+}
+
+li#sort_title {
+    background-color: #665e4d;
+    color: #FFFFFF;
+}
+
+
+li#sort-rule {
+    text-decoration: none;
+    background-color: #fffafa;
+    transition: all  0.3s ease;
+}
+
+li#sort-rule:hover {
+    background-color: #665e4d;
+}
+
+ul.comment-list {
+    list-style-type: none;
+    font-size: 13px;
+    margin-top: 20px;
+    background-color: #fcf9f0;
+    line-height: 23px;
+    width: 100%;
+}
+
+ul.comment-list li {
+    width: 100%;
+    border-top: 1px solid #ccc;
+    display: inline-block;
+    padding-top: 5px;
+    text-align: center;
+}
+
+div.comment-section {
+    display: inline-block;
+    width: 70%;
+    text-align: center;
+}
+
+div.comment-section p {
+    margin-bottom: 0px;
+}
+
+p.name{
+    text-align: left;
+    float: left;
+}
+
+p.comment {
+    text-align: left;
+}
+
+.image > img {
+    width: 100%;
+    text-align: left;
+}
+
+p.category{
+    text-align: right;
+    float: right;
+}
+
+p.datetime {
+    color: #696969;
+    text-align: right;
+}
+
+.edit-button,.delete-button {
+    display: block;
+    font-size: 10px;
+    float: left;
+}
+
